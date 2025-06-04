@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Find Capybaras Around Singapore</h1>
+
+    <form method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="q" value="{{ q }}" placeholder="Search by location..." class="form-control">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
+    {% if q %}
+        <p class="text-muted">Showing results for: <strong>{{ q }}</strong></p>
+    {% endif %}
+
+    {% if locations %}
+        <div class="list-group">
+            {% for loc in locations %}
+                <div class="list-group-item mb-3">
+                    <h5 class="mb-1">{{ loc.location }}</h5>
+                    <p class="mb-1">{{ loc.description }}</p>
+                    <p class="mb-1">
+                        Rating: {{ loc.rating }} ⭐
+                    </p>
+                    <p class="mb-1">Date added: {{ loc.date }}</p>
+                    {% if loc.image %}
+                        <img src="/static/{{ loc.image }}" alt="{{ loc.location }}" class="img-fluid mt-2" style="max-height: 200px;">
+                    {% else %}
+                        <p class="fst-italic text-muted mt-2">This capybara chooses to remain anonymous. Please respect its wishes.</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        {% if q %}
+            <p class="text-danger">No capybara locations found.</p>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from .utils import get_ip_addresses
 
-PORT = 29125
+PORT = 32353
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,7 +31,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 # hack to get origin
-ip_addresses = list(map(lambda x: f"{x}:{PORT}", get_ip_addresses()))
+ip_addresses = list(map(lambda x: f"http://{x}:{PORT}", get_ip_addresses()))
 CSRF_TRUSTED_ORIGINS = [
     f"http://localhost:{PORT}",
     f"http://127.0.0.1:{PORT}",
@@ -40,6 +40,7 @@ CSRF_TRUSTED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "capymerch.apps.CapymerchConfig",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
