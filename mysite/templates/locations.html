@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Capybara Sighting Lookup</h2>
+
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" class="form-control" id="date" name="date" value="{{ date }}">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filter by Date</button>
+        </div>
+    </form>
+
+    <hr>
+    <div class="mb-3">
+        <strong>Filter by Starting Letter:</strong><br>
+        {% for char in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" %}
+            <a href="?letter={{ char }}{% if date %}&date={{ date }}{% endif %}" class="btn btn-outline-secondary btn-sm {% if char == letter %}active{% endif %}">
+                {{ char }}
+            </a>
+        {% endfor %}
+    </div>
+
+    {% if not results and not letter %}
+        <div class="alert alert-info">Select a letter to view matching locations.</div>
+    {% elif not results %}
+        <div class="alert alert-warning">No capybaras sighted at locations starting with "{{ letter }}" on selected date.</div>
+    {% else %}
+        <div>
+            <h4>Matching Locations:</h4>
+            <ul class="list-group">
+                {% for name in results %}
+                    <li class="list-group-item">{{ name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

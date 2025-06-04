@@ -1,4 +1,4 @@
-from django.db import connection
+from django.db.models import Func, F, Value, CharField
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from capymerch.models import Location
@@ -8,6 +8,29 @@ from django.views.decorators.csrf import csrf_exempt
 
 def index(request):
     return render(request, "index.html")
+
+
+def locations(request):
+    letter = request.GET.get('letter', '').upper()
+    date = request.GET.get('date', '')
+    results = []
+
+    if letter:
+        qs = Location.objects.annotate(
+            first_letter=Func(F('location'), Value(1), Value(
+                1), function='substr', output_field=CharField())
+        ).filter(first_letter__iexact=letter)
+
+        if date:
+            qs = qs.filter(date=date)
+
+        results = [loc.location for loc in qs]
+
+    return render(request, 'locations.html', {
+        'results': results,
+        'letter': letter,
+        'date': date,
+    })
 
 
 @csrf_exempt
@@ -36,17 +59,17 @@ def search_locations(request):
 def seed():
     Location.objects.all().delete()
     locations = [
-        ("CHIJMES", "A capybara-friendly tranquil city spot.", 5,
+        ("CHIJMES", "Good ramen can be found here.", 5,
          "capy_chijmes.jpg", date.today() - timedelta(days=210)),
-        ("Asian Civilisations Museum", "Capybaras love heritage too.",
+        ("Asian Civilisations Museum", "Not super crowded and touristy unlike other museums.",
          5, "capy_acm.jpg", date.today() - timedelta(days=180)),
-        ("Merlion Park", "Touristy but capybaras don't mind.", 5,
+        ("Merlion Park", "Bleh.", 5,
          "capy_merlion.jpg", date.today() - timedelta(days=150)),
-        ("Botanic Gardens", "Great for morning capy walks.",
-         4, "", date.today() - timedelta(days=130)),
+        ("Botanic Gardens", "Kinda mid.",
+         3, "", date.today() - timedelta(days=130)),
         ("Bukit Timah Reserve", "For the adventurous capybaras.",
          4, "", date.today() - timedelta(days=110)),
-        ("East Coast Park", "Capybaras chill by the sea breeze.", 3,
+        ("East Coast Park", "Capybaras chill by the sea breeze.", 4,
          "", date.today() - timedelta(days=100)),
         ("Capy Cafe", "Cappuccino and capybaras guaranteed.",
          4, "", date.today() - timedelta(days=95)),
@@ -54,27 +77,25 @@ def seed():
          4, "", date.today() - timedelta(days=90)),
         ("MacRitchie Reservoir", "Capybaras like trails too.",
          3, "", date.today() - timedelta(days=85)),
-        ("Sentosa Beach", "Capys love sand and sun!",
+        ("Sentosa Beach", "Capys love sand and sun! And beaches!",
          4, "", date.today() - timedelta(days=80)),
         ("Labrador Nature Reserve", "Historic & peaceful.", 4,
          "", date.today() - timedelta(days=75)),
-        ("Capy HQ", "Secret society of Singaporean capybaras.",
-         4, "", date.today() - timedelta(days=70)),
-        ("Mount Faber", "For capys that love a view.",
+        ("Mount Faber", "Pull up in a cablecar.",
          3, "", date.today() - timedelta(days=65)),
-        ("Fort Canning", "Underground capybara meeting spot.",
+        ("Fort Canning", "Underground capybara meeting spot. For the sigma ones.",
          4, "", date.today() - timedelta(days=60)),
         ("Capy Express", "Mini train for capys, big vibes.",
          4, "", date.today() - timedelta(days=55)),
-        ("Yishun Riverwalk", "Danger zone? Not for capys!",
-         2, "", date.today() - timedelta(days=50)),
+        ("Punggol Waterway", "What? Otters?!",
+         1, "", date.today() - timedelta(days=50)),
         ("Southern Ridges", "Capybaras love high walks.",
          4, "", date.today() - timedelta(days=45)),
-        ("Pasir Ris Park", "Mud spa for capys.",
+        ("Pasir Ris Park", "This is where they pull up.",
          4, "", date.today() - timedelta(days=40)),
-        ("Raffles Marina", "Capys sail too.", 3,
+        ("Raffles Marina", "Capybaras love a good soak in the water. Best option since there are no hot springs in Singapore.", 3,
          "", date.today() - timedelta(days=35)),
-        ("HortPark", "Floral paradise for herbivorous friends.",
+        ("HortPark", "Great spot to chill.",
          4, "", date.today() - timedelta(days=30)),
     ]
 
