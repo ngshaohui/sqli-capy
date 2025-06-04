@@ -1,41 +1,35 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<div class="container mt-5">
-    <h1 class="mb-4">Find Capybaras Around Singapore</h1>
-
-    <form method="get" class="mb-4">
+<div class="container mt-4">
+    <h2 class="mb-4">Find Capybara Locations 🐾</h2>
+    <form method="POST" class="mb-4">
+        {% csrf_token %}
         <div class="input-group">
-            <input type="text" name="q" value="{{ q }}" placeholder="Search by location..." class="form-control">
-            <button type="submit" class="btn btn-primary">Search</button>
+            <input type="text" name="q" class="form-control" placeholder="Enter location name" value="{{ q }}">
+            <button class="btn btn-primary" type="submit">Search</button>
         </div>
     </form>
 
-    {% if q %}
-        <p class="text-muted">Showing results for: <strong>{{ q }}</strong></p>
-    {% endif %}
-
     {% if locations %}
-        <div class="list-group">
+        <h5>Results:</h5>
+        <ul class="list-group">
             {% for loc in locations %}
-                <div class="list-group-item mb-3">
-                    <h5 class="mb-1">{{ loc.location }}</h5>
-                    <p class="mb-1">{{ loc.description }}</p>
-                    <p class="mb-1">
-                        Rating: {{ loc.rating }} ⭐
-                    </p>
-                    <p class="mb-1">Date added: {{ loc.date }}</p>
+                <li class="list-group-item">
+                    <strong>{{ loc.location }}</strong><br>
+                    {{ loc.description }}<br>
+                    ⭐ {{ loc.rating }}<br>
+                    <em>{{ loc.date }}</em><br>
                     {% if loc.image %}
-                        <img src="/static/{{ loc.image }}" alt="{{ loc.location }}" class="img-fluid mt-2" style="max-height: 200px;">
+                        <img src="{% static loc.image %}" alt="capy image" class="img-fluid mt-2" style="max-height: 200px;">
                     {% else %}
-                        <p class="fst-italic text-muted mt-2">This capybara chooses to remain anonymous. Please respect its wishes.</p>
+                        <p class="text-muted mt-2">This capybara chooses to remain anonymous. Please respect its wishes.</p>
                     {% endif %}
-                </div>
+                </li>
             {% endfor %}
-        </div>
-    {% else %}
-        {% if q %}
-            <p class="text-danger">No capybara locations found.</p>
-        {% endif %}
+        </ul>
+    {% elif q %}
+        <p class="mt-3">No matching capybara locations found for "<strong>{{ q }}</strong>".</p>
     {% endif %}
 </div>
 {% endblock %}

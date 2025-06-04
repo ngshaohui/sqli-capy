@@ -3,30 +3,33 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from capymerch.models import Location
 from datetime import date, timedelta
+from django.views.decorators.csrf import csrf_exempt
 
 
 def index(request):
     return render(request, "index.html")
 
 
+@csrf_exempt
 def search_locations(request):
     locations = []
-    q = request.GET.get('q', '').strip()
+    q = ''
+    if request.method == 'POST':
+        q = request.POST.get('q', '').strip()
 
-    if q:
         try:
-            # Simple raw SQL vulnerable to injection
             sql = f"""
                 SELECT * FROM capymerch_location
                 WHERE location LIKE '%{q}%'
             """
             locations = Location.objects.raw(sql)
         except Exception as e:
+            locations = []
             print(f"[ERROR] SQL failed: {e}")
 
     return render(request, 'search_locations.html', {
         'locations': locations,
-        'q': q,
+        'q': q
     })
 
 
