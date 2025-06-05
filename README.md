@@ -1,27 +1,22 @@
-# Django with Nginx
-
-This is a template for running Django with Nginx.
-
-It utilizes Supervisor and Gunicorn to serve the Django application.
+# Capy SQLI
 
 ## Building and running
 
 ```bash
-docker build --rm -f Dockerfile -t practical:latest .
-docker run --name practical --rm -p 29125:80 practical:latest
+docker build --rm -f Dockerfile -t capy-sqli:latest .
+docker run --name capy-sqli --rm -p 29125:29125 capy-sqli:latest
 ```
 
-## Supervisor
+## Task
 
-For stacks involving a single Django application, Supervisor is not needed and Gunicorn can be run directly in the entrypoint.
+Find the SQL injection
 
-```bash
-gunicorn --workers 2 --bind 127.0.0.1:10003 mysite.wsgi:application
-```
+## Walkthrough
 
-However, the intention for this app stack was to host multiple Django applications, so Supervisor would be used to manage them all in `gunicorn.conf`.
+The SQL injection exists in the POST request on the page `/search`
 
-## TODOs
+Need to use --level=2 for this payload
 
-- move python dependencies to a separate file like `requirements.txt` instead of having it in the Dockerfile
-- use a non-root user for Docker container
+## Distractors
+
+There is another page with a GET request that functions as a distractor
